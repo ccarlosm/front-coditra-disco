@@ -1,0 +1,7 @@
+{
+  "name": "front-coditra-disco",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
