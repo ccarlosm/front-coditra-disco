@@ -1,10 +1,75 @@
 import { Component } from '@angular/core';
+import { ModalController } from '@ionic/angular';
+import { LoginComponent } from './shared/login/login.component';
+import { UserService } from './services/user.service';
+import { Observable } from 'rxjs';
+
 
 @Component({
-  selector: 'app-root',
-  templateUrl: 'app.component.html',
-  styleUrls: ['app.component.scss'],
+	selector: 'app-root',
+	templateUrl: 'app.component.html',
+	styleUrls: ['app.component.scss']
 })
 export class AppComponent {
-  constructor() {}
+	isLoggedIn = false; // Change based on user authentication status
+	selectedSegment = 'home';
+	public userData: Observable<any>;
+
+	constructor(
+		private modalCtrl: ModalController,
+		private userService: UserService
+	) {
+		this.checkIfLoggedIn();
+		this.userData = this.userService.getUserData();
+	}
+
+	/**
+	 * This function will check if we have a token stored, if not, will prompt for login
+	 *
+	 */
+	private checkIfLoggedIn() {
+		if (localStorage.getItem('access_token') == null) {
+			this.openLoginModal();
+		} else {
+			this.getUserInformation();
+		}
+	}
+
+	/**
+	 * Shows the login modal
+	 */
+	private async openLoginModal() {
+		const loginModal = await this.modalCtrl.create({
+			component: LoginComponent,
+			cssClass: 'login-modal'
+		});
+
+		//When closed, check if the loging is correct, if not, reopen the modal
+		loginModal.onDidDismiss().then(() => {
+			this.checkIfLoggedIn();
+		});
+
+		//Show the modal
+		await loginModal.present();
+	}
+
+	/**
+	 * From userService, get the user information using getCurrentUser
+	 * @private
+	 */
+	private getUserInformation() {
+		this.userService.getCurrentUser(['shop.company', 'shop.default_store', 'cash']).then(
+			(data) => {
+				this.userService.setUserData(data['data']);
+			}
+		);
+	}
+
+	
+	/**
+	 * Do logout
+	 */
+	public doLogout() {
+		this.userService.doLogout();
+	}
 }

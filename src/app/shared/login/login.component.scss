@@ -1,0 +1,20 @@
+@import 'src/global.scss';
+
+.overlay {
+    width: 100%;
+    height: 100%;
+    display: block;
+    //use :root { --ion-color-primary: #3880ff; from global.scss
+    background: var(--ion-color-primary);
+
+    .form-group {
+        width: 80%;
+        margin: 10%;
+        color: var(--ion-color-primary-contrast);
+    }
+    ion-input {
+        --background: var(--ion-color-primary-contrast);
+        --color: black;
+        --padding-start: 10px;
+    }
+}

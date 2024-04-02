@@ -1,3 +1,24 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+	<ion-header>
+		<ion-toolbar color="primary">
+			<ion-segment style="flex: 1;">
+				<ion-segment-button value="home">
+					<ion-label>Home</ion-label>
+				</ion-segment-button>
+				<ion-segment-button value="artists">
+					<ion-label>Artists</ion-label>
+				</ion-segment-button>
+				<ion-segment-button value="lps">
+					<ion-label>LPs</ion-label>
+				</ion-segment-button>
+			</ion-segment>
+			<ion-buttons slot="end" class="login-logout-container">
+				<ion-button (click)="doLogout()" style="flex: none;width:12ch;">Logout</ion-button>
+			</ion-buttons>
+		</ion-toolbar>
+	</ion-header>
+
+	<ion-content>
+		<!-- Content based on selected segment goes here -->
+	</ion-content>
 </ion-app>
