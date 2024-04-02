@@ -1,0 +1,38 @@
+ion-header {
+    ion-toolbar {
+        --background: #3880ff;
+        --color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        ion-segment {
+            flex: 1;
+            --indicator-color: #ffffff;
+            --color: #ffffff;
+            --padding-start: 0px;
+            --padding-end: 0px;
+        }
+
+        ion-segment-button {
+            --color-selected: #ffffff;
+        }
+
+        ion-buttons {
+            ion-button {
+                --background: transparent;
+                color: #ffffff;
+            }
+        }
+
+        .login-logout-container {
+            display: flex;
+            flex: none;
+
+            ion-button {
+                width: 12ch;
+                color: #ffffff;
+            }
+        }
+    }
+}
