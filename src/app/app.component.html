@@ -2,13 +2,13 @@
 	<ion-header>
 		<ion-toolbar color="primary">
 			<ion-segment style="flex: 1;">
-				<ion-segment-button value="home">
+				<ion-segment-button value="home" (click)="navigateTo('home')">
 					<ion-label>Home</ion-label>
 				</ion-segment-button>
-				<ion-segment-button value="artists">
+				<ion-segment-button value="artists" (click)="navigateTo('artists')">
 					<ion-label>Artists</ion-label>
 				</ion-segment-button>
-				<ion-segment-button value="lps">
+				<ion-segment-button value="lps" (click)="navigateTo('lps')">
 					<ion-label>LPs</ion-label>
 				</ion-segment-button>
 			</ion-segment>
@@ -19,6 +19,6 @@
 	</ion-header>
 
 	<ion-content>
-		<!-- Content based on selected segment goes here -->
+		<router-outlet></router-outlet>
 	</ion-content>
 </ion-app>

@@ -7,6 +7,14 @@ const routes: Routes = [
     loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
   },
   {
+    path: 'artists',
+    loadChildren: () => import('./artists/artists.module').then( m => m.ArtistsModule)
+  },
+  {
+    path: 'lps',
+    loadChildren: () => import('./lps/lps.module').then( m => m.LpsModule)
+  },
+  {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'

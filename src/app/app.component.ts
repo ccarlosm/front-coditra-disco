@@ -3,6 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { LoginComponent } from './shared/login/login.component';
 import { UserService } from './services/user.service';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -17,10 +18,20 @@ export class AppComponent {
 
 	constructor(
 		private modalCtrl: ModalController,
-		private userService: UserService
+		private userService: UserService,
+		private router: Router
 	) {
 		this.checkIfLoggedIn();
 		this.userData = this.userService.getUserData();
+	}
+
+	/**
+	 * Navigate to a specific path
+	 * 
+	 * @param path 
+	 */
+	public navigateTo(path: string) {
+		this.router.navigate([`/${path}`]);
 	}
 
 	/**
@@ -32,6 +43,7 @@ export class AppComponent {
 			this.openLoginModal();
 		} else {
 			this.getUserInformation();
+			this.navigateTo('home');
 		}
 	}
 
@@ -58,14 +70,14 @@ export class AppComponent {
 	 * @private
 	 */
 	private getUserInformation() {
-		this.userService.getCurrentUser(['shop.company', 'shop.default_store', 'cash']).then(
+		this.userService.getCurrentUser().then(
 			(data) => {
 				this.userService.setUserData(data['data']);
 			}
 		);
 	}
 
-	
+
 	/**
 	 * Do logout
 	 */

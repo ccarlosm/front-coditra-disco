@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit {
 		this.userSRV.doLogin(this.login.email, this.login.password).then(
 			(data) => {
 				if (data.success) {
-					localStorage.setItem('access_token', data.data.token);
+					localStorage.setItem('access_token', data.token);
 					this.getUserInformation();
 					this.modalCtrl.dismiss();
 				} else {

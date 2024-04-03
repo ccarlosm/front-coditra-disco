@@ -1,12 +1,29 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+	selector: 'app-home',
+	templateUrl: 'home.page.html',
+	styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
 
-  constructor() {}
+	selectedLength = '10';
+	page = 1;
+	column = 'id';
+	order = 'asc';
+	list: any;
 
+	constructor() { }
+
+	ngOnInit() {
+		this.list({
+			order: {
+				column: this.column,
+				order: this.order
+			},
+			page: this.page,
+			per_page: this.selectedLength,
+			relationships: ['artists,songs.authors']
+		});
+	}
 }
