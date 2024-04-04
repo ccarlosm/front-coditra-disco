@@ -1,11 +1,7 @@
 #container {
-  text-align: center;
-
   position: absolute;
   left: 0;
   right: 0;
-  top: 50%;
-  transform: translateY(-50%);
 }
 
 #container strong {
@@ -24,4 +20,19 @@
 
 #container a {
   text-decoration: none;
+}
+
+.table-container {
+  width: 80%;
+  //Center horinzontally
+  margin-left: auto;
+  margin-right: auto;
+  .mat-mdc-table {
+      background-color: var(--ion-color-primary);
+
+      th, td {
+          text-align: center;
+          border-bottom: 1px solid #000000; /* O el color opuesto deseado */
+      }
+  }
 }
