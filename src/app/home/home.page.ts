@@ -2,7 +2,6 @@ import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-import { ChangeDetectorRef } from '@angular/core';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { LpsService } from '../services/lps.service';
 
@@ -12,11 +11,11 @@ import { LpsService } from '../services/lps.service';
 	styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit, AfterViewInit {
-	selectedLength = 5;
-	page = 1;
-	column = 'id';
-	order = 'asc';
-	totalRecords = 0;
+	public selectedLength: number = 5;
+	public page: number = 1;
+	public column: string = 'id';
+	public order: string = 'asc';
+	public totalRecords: number = 0;
 
 	displayedColumns: string[] = ['LP', 'artist', 'songs', 'authors'];
 	dataSource = new MatTableDataSource();
@@ -28,7 +27,6 @@ export class HomePage implements OnInit, AfterViewInit {
 		private lpsService: LpsService,
 		private loadingCtrl: LoadingController,
 		private alertController: AlertController,
-		private changeDetectorRef: ChangeDetectorRef
 	) { }
 
 	ngOnInit() {
@@ -39,25 +37,28 @@ export class HomePage implements OnInit, AfterViewInit {
 		this.dataSource.sort = this.sort;
 		this.dataSource.paginator = this.paginator;
 
-		// No olvides reasignar el paginador y la ordenación después de que la vista se haya inicializado
-		this.paginator.page.subscribe(() => {
+		// Paginator
+		this.paginator.page.subscribe(async () => {
 			this.page = this.paginator.pageIndex + 1;
+			this.totalRecords = this.paginator.length;
 			this.selectedLength = this.paginator.pageSize;
-			this.loadData();
-			// Forzar la detección de cambios
-			this.changeDetectorRef.detectChanges();
+
+			await this.loadData();
 		});
 
+		// Sort
 		this.sort.sortChange.subscribe(() => {
-			this.paginator.pageIndex = 0;
-			this.page = 1;
-			this.column = this.sort.active;
+			if (this.sort.active === 'LP') {
+				this.column = 'title';
+			} else {
+				this.column = this.sort.active;
+			}
 			this.order = this.sort.direction;
 			this.loadData();
 		});
 	}
 
-	async loadData() {
+	async loadData({} = {}) {
 		await this.list({
 			order_by: this.column,
 			direction: this.order,
@@ -93,16 +94,10 @@ export class HomePage implements OnInit, AfterViewInit {
 
 			this.dataSource.data = transformedData;
 
-			// UPdate pagination
-			this.paginator.pageIndex = response.current_page - 1;
-			this.paginator.pageSize = response.per_page;
-			this.paginator.length = response.total;
-
-			
-
-			if (this.sort) {
-				this.dataSource.sort = this.sort;
-			}
+			// Update pagination
+			this.paginator.pageIndex = await response.current_page - 1;
+			this.paginator.length = await response.total;
+			this.paginator.pageSize = await response.per_page;
 
 			await loading.dismiss();
 		} catch (error) {
