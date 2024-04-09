@@ -3,7 +3,10 @@ import { ModalController } from '@ionic/angular';
 import { LoginComponent } from './shared/login/login.component';
 import { UserService } from './services/user.service';
 import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd, Event as RouterEvent } from '@angular/router';
+
+import { filter } from 'rxjs/operators';
+
 
 
 @Component({
@@ -15,6 +18,7 @@ export class AppComponent {
 	isLoggedIn = false; // Change based on user authentication status
 	selectedSegment = 'home';
 	public userData: Observable<any>;
+	public currentSegment = '';
 
 	constructor(
 		private modalCtrl: ModalController,
@@ -23,6 +27,13 @@ export class AppComponent {
 	) {
 		this.checkIfLoggedIn();
 		this.userData = this.userService.getUserData();
+
+		this.router.events.pipe(
+			filter((event: RouterEvent): event is NavigationEnd => event instanceof NavigationEnd)
+		).subscribe((event: NavigationEnd) => {
+			const urlSegment = event.urlAfterRedirects.split('/')[1];
+			this.currentSegment = urlSegment;
+		});
 	}
 
 	/**
@@ -30,10 +41,9 @@ export class AppComponent {
 	 * 
 	 * @param path 
 	 */
-	public navigateTo(path: string) {
-		this.router.navigate([`/${path}`]);
+	navigateTo(destination: string): void {
+		this.router.navigateByUrl('/' + destination);
 	}
-
 	/**
 	 * This function will check if we have a token stored, if not, will prompt for login
 	 *

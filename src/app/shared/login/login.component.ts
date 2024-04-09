@@ -51,6 +51,7 @@ export class LoginComponent implements OnInit {
 					localStorage.setItem('access_token', data.token);
 					this.getUserInformation();
 					this.modalCtrl.dismiss();
+					window.location.reload();
 				} else {
 					this.showLoginError();
 				}

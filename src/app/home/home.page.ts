@@ -4,6 +4,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { LpsService } from '../services/lps.service';
+import { UserService } from '../services/user.service';
+import { Subscription } from 'rxjs';
 
 @Component({
 	selector: 'app-home',
@@ -17,6 +19,10 @@ export class HomePage implements OnInit, AfterViewInit {
 	public order: string = 'asc';
 	public totalRecords: number = 0;
 
+	public isUserDataLoaded: boolean = false;
+	private subscription: Subscription | undefined;
+	public userData: any;
+
 	displayedColumns: string[] = ['LP', 'artist', 'songs', 'authors'];
 	dataSource = new MatTableDataSource();
 
@@ -27,10 +33,17 @@ export class HomePage implements OnInit, AfterViewInit {
 		private lpsService: LpsService,
 		private loadingCtrl: LoadingController,
 		private alertController: AlertController,
+		public userService: UserService
 	) { }
 
 	ngOnInit() {
-		this.loadData();
+		this.subscription = this.userService.getUserData().subscribe(data => {
+			this.userData = data;
+			if (this.userData && this.userData.id) {
+				this.loadData();
+				this.isUserDataLoaded = true; // Set the flag to true when data is loaded and valid
+			}
+		});
 	}
 
 	ngAfterViewInit() {
@@ -58,7 +71,7 @@ export class HomePage implements OnInit, AfterViewInit {
 		});
 	}
 
-	async loadData({} = {}) {
+	async loadData({ } = {}) {
 		await this.list({
 			order_by: this.column,
 			direction: this.order,

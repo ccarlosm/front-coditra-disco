@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
@@ -20,6 +21,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 		AppRoutingModule,
 		LoginComponent,
 		HttpClientModule,
+		FormsModule
 	],
 	providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, provideAnimationsAsync()],
 	bootstrap: [AppComponent],
