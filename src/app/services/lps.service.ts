@@ -14,7 +14,7 @@ export class LpsService {
 	/**
 	* List model
 	*/
-	public list(params: { order_by: string; direction :string; page: number; per_page: string; relationships: string; } | undefined): Promise<any> {
+	public list(params: { order_by: string; direction :string; page: number; per_page: string; relationships: string; artistName?: string } | undefined): Promise<any> {
 		const headers = new HttpHeaders({
 			'Content-Type': 'application/json',
 			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
