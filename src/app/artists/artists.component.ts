@@ -3,34 +3,36 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { AlertController, LoadingController } from '@ionic/angular';
-import { LpsService } from '../services/lps.service';
+import { ArtistsService } from '../services/artists.service';
 import { UserService } from '../services/user.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-	selector: 'app-home',
-	templateUrl: 'home.page.html',
-	styleUrls: ['home.page.scss'],
+	selector: 'app-artists',
+	templateUrl: './artists.component.html',
+	styleUrls: ['./artists.component.scss'],
 })
-export class HomePage implements OnInit, AfterViewInit {
+
+export class ArtistsComponent implements OnInit, AfterViewInit {
 	public selectedLength: number = 5;
 	public page: number = 1;
 	public column: string = 'id';
 	public order: string = 'asc';
 	public totalRecords: number = 0;
+	public artistFilter: string = '';  // Store the artist filter
 
 	public isUserDataLoaded: boolean = false;
 	private subscription: Subscription | undefined;
 	public userData: any;
 
-	displayedColumns: string[] = ['LP', 'artist', 'songs', 'authors'];
+	displayedColumns: string[] = ['name', 'description', 'lps'];
 	dataSource = new MatTableDataSource();
 
 	@ViewChild(MatSort) sort!: MatSort;
 	@ViewChild(MatPaginator) paginator!: MatPaginator;
 
 	constructor(
-		private lpsService: LpsService,
+		private ArtistsService: ArtistsService,
 		private loadingCtrl: LoadingController,
 		private alertController: AlertController,
 		public userService: UserService
@@ -43,6 +45,17 @@ export class HomePage implements OnInit, AfterViewInit {
 				this.loadData();
 				this.isUserDataLoaded = true; // Set the flag to true when data is loaded and valid
 			}
+		});
+	}
+
+	private async loadData() {
+		await this.list({
+			order_by: this.column,
+			direction: this.order,
+			page: this.page,
+			per_page: this.selectedLength.toString(),
+			relationships: 'lps',
+			name: this.artistFilter,
 		});
 	}
 
@@ -61,8 +74,8 @@ export class HomePage implements OnInit, AfterViewInit {
 
 		// Sort
 		this.sort.sortChange.subscribe(() => {
-			if (this.sort.active === 'LP') {
-				this.column = 'title';
+			if (this.sort.active === 'name') {
+				this.column = 'name';
 			} else {
 				this.column = this.sort.active;
 			}
@@ -71,15 +84,12 @@ export class HomePage implements OnInit, AfterViewInit {
 		});
 	}
 
-	async loadData({ } = {}) {
-		await this.list({
-			order_by: this.column,
-			direction: this.order,
-			page: this.page,
-			per_page: this.selectedLength.toString(),
-			relationships: 'artist,songs.authors',
-		});
+	public applyFilter(event: Event) {
+		const value = (event.target as HTMLInputElement).value;
+		this.artistFilter = value.trim().toLowerCase();
+		this.loadData();
 	}
+
 
 	private async list(params?: {
 		order_by: string;
@@ -87,6 +97,7 @@ export class HomePage implements OnInit, AfterViewInit {
 		page: number;
 		per_page: string;
 		relationships: string;
+		name?: string;  // Add name to the method parameters
 	}) {
 		let loading;
 
@@ -98,15 +109,14 @@ export class HomePage implements OnInit, AfterViewInit {
 			});
 			await loading.present();
 
-			const response = await this.lpsService.list(params);
+			const response = await this.ArtistsService.list(params);
 			const rawData = response.data;
 
 			//Map data to a format that can be displayed in the table
-			const transformedData = rawData.map((lp: { title: any; songs: string | any[], artist: { name: string }; }) => ({
-				LP: lp.title,
-				songs: Array.isArray(lp.songs) ? lp.songs.length : 0,
-				authors: Array.isArray(lp.songs) ? this.getAuthorsList(lp.songs) : '',
-				artist: Array.isArray(lp.artist) ? '' : lp.artist.name
+			const transformedData = rawData.map((artist: {name: string, description: string, lps: []}) => ({
+				name: artist.name,
+				description: artist.description,
+				lps: Array.isArray(artist.lps) ? artist.lps.length : 0,
 			}));
 
 			this.dataSource.data = transformedData;
@@ -119,7 +129,7 @@ export class HomePage implements OnInit, AfterViewInit {
 			await loading.dismiss();
 		} catch (error) {
 			const alert = await this.alertController.create({
-				message: 'Error fetching LPs. Please try again.',
+				message: 'Error fetching artists. Please try again.',
 				buttons: [{ text: 'Ok' }],
 			});
 
@@ -131,16 +141,5 @@ export class HomePage implements OnInit, AfterViewInit {
 			}
 		}
 	}
-
-	// Función auxiliar para obtener una lista de nombres de autores separados por comas
-	private getAuthorsList(songs: any[]): string {
-		const authorsSet = new Set(); // Utilizar un Set para evitar nombres duplicados
-		songs.forEach(song => {
-			song.authors.forEach((author: { firstname: unknown; }) => {
-				authorsSet.add(author.firstname);
-			});
-		});
-
-		return Array.from(authorsSet).join(', ');
-	}
 }
+

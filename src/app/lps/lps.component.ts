@@ -8,16 +8,17 @@ import { UserService } from '../services/user.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-	selector: 'app-home',
-	templateUrl: 'home.page.html',
-	styleUrls: ['home.page.scss'],
+	selector: 'app-lps',
+	templateUrl: './lps.component.html',
+	styleUrls: ['./lps.component.scss'],
 })
-export class HomePage implements OnInit, AfterViewInit {
+export class LpsComponent implements OnInit, AfterViewInit {
 	public selectedLength: number = 5;
 	public page: number = 1;
 	public column: string = 'id';
 	public order: string = 'asc';
 	public totalRecords: number = 0;
+	public artistFilter: string = '';  // Store the artist filter
 
 	public isUserDataLoaded: boolean = false;
 	private subscription: Subscription | undefined;
@@ -46,6 +47,17 @@ export class HomePage implements OnInit, AfterViewInit {
 		});
 	}
 
+	private async loadData() {
+		await this.list({
+			order_by: this.column,
+			direction: this.order,
+			page: this.page,
+			per_page: this.selectedLength.toString(),
+			relationships: 'artist,songs.authors',
+			artist_name: this.artistFilter,  // Pass the artist filter to the API
+		});
+	}
+
 	ngAfterViewInit() {
 		this.dataSource.sort = this.sort;
 		this.dataSource.paginator = this.paginator;
@@ -71,15 +83,12 @@ export class HomePage implements OnInit, AfterViewInit {
 		});
 	}
 
-	async loadData({ } = {}) {
-		await this.list({
-			order_by: this.column,
-			direction: this.order,
-			page: this.page,
-			per_page: this.selectedLength.toString(),
-			relationships: 'artist,songs.authors',
-		});
+	public applyFilter(event: Event) {
+		const value = (event.target as HTMLInputElement).value;
+		this.artistFilter = value.trim().toLowerCase();
+		this.loadData();
 	}
+
 
 	private async list(params?: {
 		order_by: string;
@@ -87,6 +96,7 @@ export class HomePage implements OnInit, AfterViewInit {
 		page: number;
 		per_page: string;
 		relationships: string;
+		artist_name?: string;  // Add artist_name to the method parameters
 	}) {
 		let loading;
 
@@ -132,9 +142,9 @@ export class HomePage implements OnInit, AfterViewInit {
 		}
 	}
 
-	// Función auxiliar para obtener una lista de nombres de autores separados por comas
+	// Function helper to get a list of author names separated by commas
 	private getAuthorsList(songs: any[]): string {
-		const authorsSet = new Set(); // Utilizar un Set para evitar nombres duplicados
+		const authorsSet = new Set(); // Use a Set to avoid duplicate names
 		songs.forEach(song => {
 			song.authors.forEach((author: { firstname: unknown; }) => {
 				authorsSet.add(author.firstname);

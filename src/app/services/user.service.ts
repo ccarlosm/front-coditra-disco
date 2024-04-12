@@ -6,6 +6,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 interface UserData {
 	success: boolean;
 	data: any;
+	token?: any;
 }
 
 @Injectable({
@@ -85,7 +86,7 @@ export class UserService {
 		const relationshipQuery = relationships
 			.map((r) => `relationships[]=${r}`)
 			.join('&');
-		const endpoint = `${getAPIEndpoint()}user${relationships.length ? `?${relationshipQuery}` : ''
+		const endpoint = `${getAPIEndpoint()}v1/user${relationships.length ? `?${relationshipQuery}` : ''
 			}`;
 
 		return new Promise((resolve, reject) => {

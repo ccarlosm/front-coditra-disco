@@ -1,11 +1,17 @@
 <ion-header [translucent]="true" class="ion-no-border">
 	<ion-title class="ion-text-center" class="table-header">
-		Discography LPs
+		LP directory
 	</ion-title>
 </ion-header>
 
 <ion-content [fullscreen]="true">
 	<div id="container" class="table-container">
+		<div style="padding: 20px;">
+			<mat-form-field appearance="outline">
+				<mat-label>Search by artist</mat-label>
+				<input matInput (keyup.enter)="applyFilter($event)" (blur)="applyFilter($event)" placeholder="Type an artist name" type="text">
+			</mat-form-field>
+		</div>
 		<table mat-table [dataSource]="dataSource" matSort>
 			<ng-container matColumnDef="LP">
 				<th mat-header-cell *matHeaderCellDef mat-sort-header> LP </th>

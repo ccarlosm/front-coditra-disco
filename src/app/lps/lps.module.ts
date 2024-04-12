@@ -4,20 +4,26 @@ import { IonicModule } from '@ionic/angular';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { HomePage } from './home.page';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
-import { HomePageRoutingModule } from './home-routing.module';
+import { LpsRoutingModule } from './lps-routing.module';
+import { LpsComponent } from './lps.component';
 
 
 @NgModule({
+  declarations: [LpsComponent],
   imports: [
     CommonModule,
+    LpsRoutingModule,
+    CommonModule,
     IonicModule,
-    HomePageRoutingModule,
     MatTableModule,
 	  MatSortModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
-  declarations: [HomePage]
+  exports: [LpsComponent]
 })
-export class HomePageModule {}
+export class LpsModule { }

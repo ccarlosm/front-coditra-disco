@@ -3,6 +3,10 @@ import { ModalController } from '@ionic/angular';
 import { LoginComponent } from './shared/login/login.component';
 import { UserService } from './services/user.service';
 import { Observable } from 'rxjs';
+import { Router, NavigationEnd, Event as RouterEvent } from '@angular/router';
+
+import { filter } from 'rxjs/operators';
+
 
 
 @Component({
@@ -14,15 +18,32 @@ export class AppComponent {
 	isLoggedIn = false; // Change based on user authentication status
 	selectedSegment = 'home';
 	public userData: Observable<any>;
+	public currentSegment = '';
 
 	constructor(
 		private modalCtrl: ModalController,
-		private userService: UserService
+		private userService: UserService,
+		private router: Router
 	) {
 		this.checkIfLoggedIn();
 		this.userData = this.userService.getUserData();
+
+		this.router.events.pipe(
+			filter((event: RouterEvent): event is NavigationEnd => event instanceof NavigationEnd)
+		).subscribe((event: NavigationEnd) => {
+			const urlSegment = event.urlAfterRedirects.split('/')[1];
+			this.currentSegment = urlSegment;
+		});
 	}
 
+	/**
+	 * Navigate to a specific path
+	 * 
+	 * @param path 
+	 */
+	navigateTo(destination: string): void {
+		this.router.navigateByUrl('/' + destination);
+	}
 	/**
 	 * This function will check if we have a token stored, if not, will prompt for login
 	 *
@@ -32,6 +53,7 @@ export class AppComponent {
 			this.openLoginModal();
 		} else {
 			this.getUserInformation();
+			this.navigateTo('home');
 		}
 	}
 
@@ -58,14 +80,14 @@ export class AppComponent {
 	 * @private
 	 */
 	private getUserInformation() {
-		this.userService.getCurrentUser(['shop.company', 'shop.default_store', 'cash']).then(
+		this.userService.getCurrentUser().then(
 			(data) => {
 				this.userService.setUserData(data['data']);
 			}
 		);
 	}
 
-	
+
 	/**
 	 * Do logout
 	 */
