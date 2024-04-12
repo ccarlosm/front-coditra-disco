@@ -91,7 +91,11 @@ export class HomePage implements OnInit, AfterViewInit {
 		let loading;
 
 		try {
-			loading = await this.loadingCtrl.create({});
+			loading = await this.loadingCtrl.create({
+				message: 'Loading...',
+				spinner: 'circles',
+				cssClass: 'custom-loader-class',
+			});
 			await loading.present();
 
 			const response = await this.lpsService.list(params);
