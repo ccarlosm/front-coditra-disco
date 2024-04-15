@@ -10,10 +10,12 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { LoginComponent } from './shared/login/login.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
 	declarations: [
-		AppComponent
+		AppComponent,
+		ConfirmDialogComponent
 	],
 	imports: [
 		BrowserModule,

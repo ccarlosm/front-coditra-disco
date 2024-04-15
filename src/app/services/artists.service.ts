@@ -36,5 +36,30 @@ export class ArtistsService {
 			});
 		});
 	}
+
+	/**
+	 * Detele model
+	 */
+	public delete(id: number): Promise<any> {
+		const headers = new HttpHeaders({
+			'Content-Type': 'application/json',
+			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+		});
+		const options = {
+			headers
+		};
+
+		return new Promise((resolve, reject) => {
+			const url = getAPIEndpoint() + 'v1/artists/' + id;
+			this.http.delete<any>(url, options).subscribe({
+				next: (data) => {
+					resolve(data);
+				},
+				error: (error) => {
+					reject(error);
+				}
+			});
+		});
+	}
 }
 
