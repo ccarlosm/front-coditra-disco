@@ -114,7 +114,7 @@ export class ArtistsComponent implements OnInit, AfterViewInit {
 		page: number;
 		per_page: string;
 		relationships: string;
-		name?: string;  // Add name to the method parameters
+		name?: string;  
 	}) {
 
 		try {
@@ -138,8 +138,12 @@ export class ArtistsComponent implements OnInit, AfterViewInit {
 			this.paginator.pageSize = await response.per_page;
 
 		} catch (error) {
-			await this.showAlert('Error fetching artists. Please try again.');
+			const alert = await this.alertController.create({
+				message: 'Error fetching Artists. Please try again.',
+				buttons: [{ text: 'Ok' }],
+			});
 
+			await alert.present();
 			console.error(error);
 		}
 	}

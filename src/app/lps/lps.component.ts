@@ -1,8 +1,11 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { AlertController, LoadingController } from '@ionic/angular';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
+import { ModalController } from '@ionic/angular';
 import { LpsService } from '../services/lps.service';
 import { UserService } from '../services/user.service';
 import { Subscription } from 'rxjs';
@@ -11,7 +14,15 @@ import { Subscription } from 'rxjs';
 	selector: 'app-lps',
 	templateUrl: './lps.component.html',
 	styleUrls: ['./lps.component.scss'],
+	animations: [
+		trigger('detailExpand', [
+			state('collapsed,void', style({ height: '0px', minHeight: '0' })),
+			state('expanded', style({ height: '*' })),
+			transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+		]),
+	],
 })
+
 export class LpsComponent implements OnInit, AfterViewInit {
 	public selectedLength: number = 5;
 	public page: number = 1;
@@ -24,8 +35,9 @@ export class LpsComponent implements OnInit, AfterViewInit {
 	private subscription: Subscription | undefined;
 	public userData: any;
 
-	displayedColumns: string[] = ['LP', 'artist', 'songs', 'authors'];
+	displayedColumns: string[] = ['LP', 'artist', 'songs', 'authors', 'actions'];
 	dataSource = new MatTableDataSource();
+	expandedElement: any | null;
 
 	@ViewChild(MatSort) sort!: MatSort;
 	@ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -34,7 +46,8 @@ export class LpsComponent implements OnInit, AfterViewInit {
 		private lpsService: LpsService,
 		private loadingCtrl: LoadingController,
 		private alertController: AlertController,
-		public userService: UserService
+		public userService: UserService,
+		public modalCtrl: ModalController
 	) { }
 
 	ngOnInit() {
@@ -48,13 +61,22 @@ export class LpsComponent implements OnInit, AfterViewInit {
 	}
 
 	private async loadData() {
+		const loading = await this.loadingCtrl.create({
+			message: 'Loading...',
+			spinner: 'circles',
+			cssClass: 'custom-loader-class',
+		});
+		await loading.present();
+
 		await this.list({
 			order_by: this.column,
 			direction: this.order,
 			page: this.page,
 			per_page: this.selectedLength.toString(),
 			relationships: 'artist,songs.authors',
-			artist_name: this.artistFilter,  // Pass the artist filter to the API
+			artist_name: this.artistFilter,
+		}).finally(() => {
+			loading.dismiss();
 		});
 	}
 
@@ -73,11 +95,7 @@ export class LpsComponent implements OnInit, AfterViewInit {
 
 		// Sort
 		this.sort.sortChange.subscribe(() => {
-			if (this.sort.active === 'LP') {
-				this.column = 'title';
-			} else {
-				this.column = this.sort.active;
-			}
+			this.column = this.sort.active;
 			this.order = this.sort.direction;
 			this.loadData();
 		});
@@ -98,21 +116,14 @@ export class LpsComponent implements OnInit, AfterViewInit {
 		relationships: string;
 		artist_name?: string;  // Add artist_name to the method parameters
 	}) {
-		let loading;
 
 		try {
-			loading = await this.loadingCtrl.create({
-				message: 'Loading...',
-				spinner: 'circles',
-				cssClass: 'custom-loader-class',
-			});
-			await loading.present();
-
 			const response = await this.lpsService.list(params);
 			const rawData = response.data;
 
 			//Map data to a format that can be displayed in the table
-			const transformedData = rawData.map((lp: { title: any; songs: string | any[], artist: { name: string }; }) => ({
+			const transformedData = rawData.map((lp: { id: number, title: any; songs: string | any[], artist: { name: string }; }) => ({
+				id: lp.id,
 				LP: lp.title,
 				songs: Array.isArray(lp.songs) ? lp.songs.length : 0,
 				authors: Array.isArray(lp.songs) ? this.getAuthorsList(lp.songs) : '',
@@ -125,8 +136,6 @@ export class LpsComponent implements OnInit, AfterViewInit {
 			this.paginator.pageIndex = await response.current_page - 1;
 			this.paginator.length = await response.total;
 			this.paginator.pageSize = await response.per_page;
-
-			await loading.dismiss();
 		} catch (error) {
 			const alert = await this.alertController.create({
 				message: 'Error fetching LPs. Please try again.',
@@ -135,12 +144,60 @@ export class LpsComponent implements OnInit, AfterViewInit {
 
 			await alert.present();
 			console.error(error);
-		} finally {
-			if (loading) {
-				await loading.dismiss();
-			}
 		}
 	}
+
+	public editLp(lp: any) {
+		console.log('Editing lp:', lp);
+		// Open an edit dialog or navigate to an edit page. Example:
+		// this.dialog.open(EditArtistDialog, { data: artist });
+	}
+
+	async deleteLp(lp: any) {
+		try {
+			const modal = await this.modalCtrl.create({
+				component: ConfirmDialogComponent,
+				cssClass: 'confirm-dialog',
+				componentProps: {
+					title: 'Delete LP',
+					message: `Are you sure you want to delete ${lp.name}? This action cannot be undone.`,
+					confirmButtonText: 'Delete',
+					cancelButtonText: 'Cancel',
+				}
+			});
+
+			await modal.present();
+
+			const { data } = await modal.onWillDismiss();
+			if (data) {
+				this.delete(lp);
+			}
+		} catch (error) {
+			console.error('Error presenting modal', error);
+			this.showAlert('Error opening confirmation dialog.');
+		}
+	}
+
+
+	private async delete(artist: any) {
+		this.lpsService.delete(artist.id).then(() => {
+			this.loadData();  // Refresh the list after delete
+		}).catch((error: any) => {  // Explicitly typing the error parameter
+			console.error('Error deleting artist:', error);
+			this.showAlert('Error deleting artist. Please try again.');
+		});
+	}
+
+
+
+	private async showAlert(message: string) {
+		const alert = await this.alertController.create({
+			message: message,
+			buttons: ['OK']
+		});
+		await alert.present();
+	}
+
 
 	// Function helper to get a list of author names separated by commas
 	private getAuthorsList(songs: any[]): string {
