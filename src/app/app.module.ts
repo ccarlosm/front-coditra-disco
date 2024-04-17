@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
@@ -11,11 +11,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { LoginComponent } from './shared/login/login.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
+import { NewEditComponent } from './artists/new-edit/new-edit.component';
 
 @NgModule({
 	declarations: [
 		AppComponent,
-		ConfirmDialogComponent
+		ConfirmDialogComponent,
+		NewEditComponent
 	],
 	imports: [
 		BrowserModule,
@@ -23,7 +25,8 @@ import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.c
 		AppRoutingModule,
 		LoginComponent,
 		HttpClientModule,
-		FormsModule
+		FormsModule,
+		ReactiveFormsModule
 	],
 	providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, provideAnimationsAsync()],
 	bootstrap: [AppComponent],

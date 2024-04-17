@@ -9,6 +9,8 @@ import { ModalController } from '@ionic/angular';
 import { ArtistsService } from '../services/artists.service';
 import { UserService } from '../services/user.service';
 import { Subscription } from 'rxjs';
+import { NewEditComponent } from './new-edit/new-edit.component';
+
 
 @Component({
 	selector: 'app-artists',
@@ -114,7 +116,7 @@ export class ArtistsComponent implements OnInit, AfterViewInit {
 		page: number;
 		per_page: string;
 		relationships: string;
-		name?: string;  
+		name?: string;
 	}) {
 
 		try {
@@ -148,10 +150,56 @@ export class ArtistsComponent implements OnInit, AfterViewInit {
 		}
 	}
 
-	public editArtist(artist: any) {
-		console.log('Editing artist:', artist);
-		// Open an edit dialog or navigate to an edit page. Example:
-		// this.dialog.open(EditArtistDialog, { data: artist });
+	async editArtist(artist: any) {
+		try {
+			const modal = await this.modalCtrl.create({
+				component: NewEditComponent,
+				cssClass: 'new-edit-modal',
+				componentProps: {
+					artist: artist,
+					title: 'Edit Artist: ' + artist.name,
+					confirmButtonText: 'Save',
+					cancelButtonText: 'Cancel',
+				}
+			});
+
+			await modal.present();
+
+			// Handle the result when the modal is dismissed
+			const { data } = await modal.onDidDismiss();
+			if (data) {
+				this.loadData(); // Only call loadData if there's data, implying successful update
+			}
+		} catch (error) {
+			console.error('Error opening edit artist modal:', error);
+			this.showAlert('Error opening edit artist dialog.');
+		}
+	}
+
+	async createArtist() {
+		try {
+			const modal = await this.modalCtrl.create({
+				component: NewEditComponent,
+				cssClass: 'new-edit-modal',
+				componentProps: {
+					title: 'New Artist',
+					confirmButtonText: 'Create',
+					cancelButtonText: 'Cancel',
+				}
+			});
+
+			await modal.present();
+
+			// Handle the result when the modal is dismissed
+			const { data } = await modal.onDidDismiss();
+			if (data) {
+				this.loadData(); // Only call loadData if there's data, implying successful creation
+			}
+		} catch (error) {
+			console.error('Error opening new artist modal:', error);
+			this.showAlert('Error opening new artist dialog.');
+		}
+	
 	}
 
 	async deleteArtist(artist: any) {

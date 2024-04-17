@@ -15,12 +15,7 @@ export class ConfirmDialogComponent implements OnInit {
 
 	constructor(private modalController: ModalController) { }
 
-	ngOnInit() {
-		console.log(this.title);
-		console.log(this.message);
-		console.log(this.confirmButtonText);
-		console.log(this.cancelButtonText);
-	 }
+	ngOnInit() { }
 
 	close(result: boolean) {
 		this.modalController.dismiss(result);

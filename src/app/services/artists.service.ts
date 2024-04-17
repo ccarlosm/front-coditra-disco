@@ -61,5 +61,55 @@ export class ArtistsService {
 			});
 		});
 	}
+
+	/**
+	 * Update model
+	 */
+	public update(id: number, data: any): Promise<any> {
+		const headers = new HttpHeaders({
+			'Content-Type': 'application/json',
+			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+		});
+		const options = {
+			headers
+		};
+
+		return new Promise((resolve, reject) => {
+			const url = getAPIEndpoint() + 'v1/artists/' + id;
+			this.http.put<any>(url, data, options).subscribe({
+				next: (data) => {
+					resolve(data);
+				},
+				error: (error) => {
+					reject(error);
+				}
+			});
+		});
+	}
+
+	/**
+	 * Create model
+	 */
+	public create(data: any): Promise<any> {
+		const headers = new HttpHeaders({
+			'Content-Type': 'application/json',
+			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+		});
+		const options = {
+			headers
+		};
+
+		return new Promise((resolve, reject) => {
+			const url = getAPIEndpoint() + 'v1/artists';
+			this.http.post<any>(url, data, options).subscribe({
+				next: (data) => {
+					resolve(data);
+				},
+				error: (error) => {
+					reject(error);
+				}
+			});
+		});
+	}
 }
 

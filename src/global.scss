@@ -31,5 +31,13 @@ ion-modal {
 }
 
 ion-modal.confirm-dialog {
-    --height:300px;
+    --height:250px;
+}
+
+ion-modal.new-edit-modal {
+    --height:350px;
+}
+
+ion-item {
+    --border-style:none !important;
 }

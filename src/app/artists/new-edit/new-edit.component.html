@@ -1,3 +1,23 @@
-<p>
-  new-edit works!
-</p>
+<ion-header class="ion-no-border">
+	<ion-toolbar>
+		<ion-title>{{ title }}</ion-title>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content>
+	<form [formGroup]="artistForm" (ngSubmit)="saveArtist()" style="margin-bottom: 20px;">
+		<ion-item>
+			<ion-label position="floating">Artist Name</ion-label>
+			<ion-input aria-label="artist-name" formControlName="name" type="text" [counter]="true" maxlength="50"></ion-input>
+		</ion-item>
+		<ion-item>
+			<ion-label position="floating">Description</ion-label>
+			<ion-textarea aria-label="artist-description" formControlName="description" [counter]="true" maxlength="256"></ion-textarea>
+		</ion-item>
+		<div style="margin-bottom: 2rem;"></div>
+		<ion-row class="button-row">
+			<ion-button expand="block" type="submit" [disabled]="!artistForm.valid">{{ confirmButtonText }}</ion-button>
+			<ion-button expand="block" color="medium" (click)="close()">{{ cancelButtonText }}</ion-button>
+		</ion-row>
+	</form>
+</ion-content>
