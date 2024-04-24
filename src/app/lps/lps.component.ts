@@ -9,6 +9,7 @@ import { ModalController } from '@ionic/angular';
 import { LpsService } from '../services/lps.service';
 import { UserService } from '../services/user.service';
 import { Subscription } from 'rxjs';
+import { NewEditComponent } from './components/modals/new-edit/new-edit.component';
 
 @Component({
 	selector: 'app-lps',
@@ -122,8 +123,10 @@ export class LpsComponent implements OnInit, AfterViewInit {
 			const rawData = response.data;
 
 			//Map data to a format that can be displayed in the table
-			const transformedData = rawData.map((lp: { id: number, title: any; songs: string | any[], artist: { name: string }; }) => ({
+			const transformedData = rawData.map((lp: { id: number, title: any; description: string, songs: string | any[], artist: { name: string }; }) => ({
 				id: lp.id,
+				title: lp.title,
+				description: lp.description,
 				LP: lp.title,
 				songs: Array.isArray(lp.songs) ? lp.songs.length : 0,
 				authors: Array.isArray(lp.songs) ? this.getAuthorsList(lp.songs) : '',
@@ -148,10 +151,56 @@ export class LpsComponent implements OnInit, AfterViewInit {
 		}
 	}
 
-	public editLp(lp: any) {
-		console.log('Editing lp:', lp);
-		// Open an edit dialog or navigate to an edit page. Example:
-		// this.dialog.open(EditArtistDialog, { data: artist });
+	async editLp(lp: any) {
+		try {
+			const modal = await this.modalCtrl.create({
+				component: NewEditComponent,
+				cssClass: 'new-edit-modal',
+				componentProps: {
+					lp: lp,
+					title: 'Edit Lp: ' + lp.title,
+					confirmButtonText: 'Save',
+					cancelButtonText: 'Cancel',
+				}
+			});
+
+			await modal.present();
+
+			// Handle the result when the modal is dismissed
+			const { data } = await modal.onDidDismiss();
+			if (data) {
+				this.loadData(); // Only call loadData if there's data, implying successful update
+			}
+		} catch (error) {
+			console.error('Error opening edit lp modal:', error);
+			this.showAlert('Error opening edit lp dialog.');
+		}
+	}
+
+	async createLp() {
+		try {
+			const modal = await this.modalCtrl.create({
+				component: NewEditComponent,
+				cssClass: 'new-edit-modal',
+				componentProps: {
+					title: 'New Lp',
+					confirmButtonText: 'Create',
+					cancelButtonText: 'Cancel',
+				}
+			});
+
+			await modal.present();
+
+			// Handle the result when the modal is dismissed
+			const { data } = await modal.onDidDismiss();
+			if (data) {
+				this.loadData(); // Only call loadData if there's data, implying successful creation
+			}
+		} catch (error) {
+			console.error('Error opening new lp modal:', error);
+			this.showAlert('Error opening new lp dialog.');
+		}
+	
 	}
 
 	async deleteLp(lp: any) {

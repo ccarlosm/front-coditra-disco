@@ -1,0 +1,23 @@
+<ion-header class="ion-no-border">
+	<ion-toolbar>
+		<ion-title>{{ title }}</ion-title>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content>
+	<form [formGroup]="lpForm" (ngSubmit)="saveLp()" style="margin-bottom: 20px;">
+		<ion-item>
+			<ion-label position="floating">LP title</ion-label>
+			<ion-input aria-label="lp-title" formControlName="title" type="text" [counter]="true" maxlength="50"></ion-input>
+		</ion-item>
+		<ion-item>
+			<ion-label position="floating">Description</ion-label>
+			<ion-textarea aria-label="lp-description" formControlName="description" [counter]="true" maxlength="256" autoGrow="true"></ion-textarea>
+		</ion-item>
+		<div style="margin-bottom: 2rem;"></div>
+		<ion-row class="button-row">
+			<ion-button expand="block" type="submit" [disabled]="!lpForm.valid">{{ confirmButtonText }}</ion-button>
+			<ion-button expand="block" color="medium" (click)="close()">{{ cancelButtonText }}</ion-button>
+		</ion-row>
+	</form>
+</ion-content>
