@@ -5,6 +5,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
+import {MatIconModule} from '@angular/material/icon';
+import {MatButtonModule} from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { LpsRoutingModule } from './lps-routing.module';
@@ -16,13 +18,14 @@ import { LpsComponent } from './lps.component';
   imports: [
     CommonModule,
     LpsRoutingModule,
-    CommonModule,
     IonicModule,
     MatTableModule,
 	  MatSortModule,
     MatPaginatorModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatIconModule,
+    MatButtonModule
   ],
   exports: [LpsComponent]
 })

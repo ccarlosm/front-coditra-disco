@@ -26,5 +26,18 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 ion-modal {
-    --height: fit-content;
+    --border-radius: 5px !important;
+    --height:fit-content;
+}
+
+ion-modal.confirm-dialog {
+    --height:250px;
+}
+
+ion-modal.new-edit-modal {
+    --height:350px;
+}
+
+ion-item {
+    --border-style:none !important;
 }
