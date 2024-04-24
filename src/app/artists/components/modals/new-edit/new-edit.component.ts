@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
-import { ArtistsService } from '../../services/artists.service';
+import { ArtistsService } from '../../../../services/artists.service';
 
 @Component({
 	selector: 'app-new-edit-artist',

@@ -127,7 +127,8 @@ export class LpsComponent implements OnInit, AfterViewInit {
 				LP: lp.title,
 				songs: Array.isArray(lp.songs) ? lp.songs.length : 0,
 				authors: Array.isArray(lp.songs) ? this.getAuthorsList(lp.songs) : '',
-				artist: Array.isArray(lp.artist) ? '' : lp.artist.name
+				//If artists name exists get the name, otherwise set it to an empty string
+				artist: lp.artist ? lp.artist.name : '',
 			}));
 
 			this.dataSource.data = transformedData;

@@ -25,7 +25,6 @@
 				<td mat-cell *matCellDef="let element" class="expand-cell">
 					<button mat-icon-button *ngIf="element.lpsCount"
 						(click)="expandedElement = expandedElement === element ? null : element">
-						<mat-icon>playlist_add</mat-icon>
 					</button>
 				</td>
 			</ng-container>
@@ -45,7 +44,7 @@
 				<td mat-cell *matCellDef="let element">
 					<a (click)="expandedElement = expandedElement === element ? null : element" class="lp-count">
 						<span>{{element.lpsCount}}</span>
-						<mat-icon>playlist_add</mat-icon>
+						<mat-icon>list</mat-icon>
 					</a>
 				</td>
 			</ng-container>
@@ -72,11 +71,6 @@
 								<div *ngFor="let lp of element.lps" class="example-element-detail">
 									{{lp.title}}
 								</div>
-							</div>
-							<div>
-								<button mat-icon-button>
-									<mat-icon>edit</mat-icon>
-								</button>
 							</div>
 						</div>
 					</div>

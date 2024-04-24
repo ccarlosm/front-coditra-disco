@@ -9,8 +9,7 @@ import { ModalController } from '@ionic/angular';
 import { ArtistsService } from '../services/artists.service';
 import { UserService } from '../services/user.service';
 import { Subscription } from 'rxjs';
-import { NewEditComponent } from './new-edit/new-edit.component';
-
+import { NewEditComponent } from './components/modals/new-edit/new-edit.component';
 
 @Component({
 	selector: 'app-artists',
@@ -241,8 +240,6 @@ export class ArtistsComponent implements OnInit, AfterViewInit {
 			this.showAlert('Error deleting artist. Please try again.');
 		});
 	}
-
-
 
 	private async showAlert(message: string) {
 		const alert = await this.alertController.create({
