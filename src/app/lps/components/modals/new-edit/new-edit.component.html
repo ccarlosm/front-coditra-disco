@@ -14,6 +14,12 @@
 			<ion-label position="floating">Description</ion-label>
 			<ion-textarea aria-label="lp-description" formControlName="description" [counter]="true" maxlength="256" autoGrow="true"></ion-textarea>
 		</ion-item>
+		<mat-form-field>
+			<mat-label>Artists</mat-label>
+			<mat-select formControlName="artistControl">
+				<mat-option *ngFor="let artist of artists" [value]="artist.id">{{ artist.name }}</mat-option>
+			</mat-select>
+		</mat-form-field>
 		<div style="margin-bottom: 2rem;"></div>
 		<ion-row class="button-row">
 			<ion-button expand="block" type="submit" [disabled]="!lpForm.valid">{{ confirmButtonText }}</ion-button>

@@ -123,7 +123,7 @@ export class LpsComponent implements OnInit, AfterViewInit {
 			const rawData = response.data;
 
 			//Map data to a format that can be displayed in the table
-			const transformedData = rawData.map((lp: { id: number, title: any; description: string, songs: string | any[], artist: { name: string }; }) => ({
+			const transformedData = rawData.map((lp: { id: number, title: any; description: string, songs: string | any[], artist: { name: string }, artist_id: number; }) => ({
 				id: lp.id,
 				title: lp.title,
 				description: lp.description,
@@ -132,6 +132,7 @@ export class LpsComponent implements OnInit, AfterViewInit {
 				authors: Array.isArray(lp.songs) ? this.getAuthorsList(lp.songs) : '',
 				//If artists name exists get the name, otherwise set it to an empty string
 				artist: lp.artist ? lp.artist.name : '',
+				artist_id: lp.artist_id,
 			}));
 
 			this.dataSource.data = transformedData;

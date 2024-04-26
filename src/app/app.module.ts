@@ -14,6 +14,15 @@ import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.c
 import { NewEditComponent } from './artists/components/modals/new-edit/new-edit.component';
 import { NewEditComponent as NewEditComponentLps } from './lps/components/modals/new-edit/new-edit.component';
 
+import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
 @NgModule({
 	declarations: [
 		AppComponent,
@@ -28,7 +37,15 @@ import { NewEditComponent as NewEditComponentLps } from './lps/components/modals
 		LoginComponent,
 		HttpClientModule,
 		FormsModule,
-		ReactiveFormsModule
+		ReactiveFormsModule,
+		MatTableModule,
+		MatSortModule,
+		MatPaginatorModule,
+		MatFormFieldModule,
+		MatInputModule,
+		MatIconModule,
+		MatButtonModule,
+		MatSelectModule,
 	],
 	providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, provideAnimationsAsync()],
 	bootstrap: [AppComponent],
