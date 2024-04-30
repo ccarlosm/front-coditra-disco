@@ -1,0 +1,32 @@
+<ion-header class="ion-no-border">
+	<ion-toolbar>
+		<ion-title>{{ title }}</ion-title>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content>
+	<form [formGroup]="lpForm" (ngSubmit)="saveLp()" style="margin-bottom: 20px;">
+		<ion-item>
+			<ion-label position="floating">LP title</ion-label>
+			<ion-input aria-label="title" formControlName="title" type="text"></ion-input>
+		</ion-item>
+		<ion-item>
+			<ion-label position="floating">Description</ion-label>
+			<ion-textarea aria-label="description" formControlName="description" autoGrow="true"></ion-textarea>
+		</ion-item>
+		<!-- Artist Selector with Search -->
+		<mat-form-field appearance="fill" style="width: 80%;margin-left:10px;margin-top: 20px;">
+			<mat-label>Select an Artist</mat-label>
+			<input matInput placeholder="Type to search artists" [formControl]="artistControl" [matAutocomplete]="auto">
+			<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+				<mat-option *ngFor="let artist of filteredArtists | async" [value]="artist">
+					{{ artist.name }}
+				</mat-option>
+			</mat-autocomplete>
+		</mat-form-field>
+		<ion-row>
+			<ion-button expand="block" type="submit" [disabled]="!lpForm.valid">{{ confirmButtonText }}</ion-button>
+			<ion-button expand="block" color="medium" (click)="close()">{{ cancelButtonText }}</ion-button>
+		</ion-row>
+	</form>
+</ion-content>

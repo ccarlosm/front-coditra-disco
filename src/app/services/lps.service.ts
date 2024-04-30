@@ -14,7 +14,7 @@ export class LpsService {
 	/**
 	* List model
 	*/
-	public list(params: { order_by: string; direction :string; page: number; per_page: string; relationships: string; artistName?: string } | undefined): Promise<any> {
+	public list(params: { order_by: string; direction: string; page: number; per_page: string; relationships: string; artistName?: string } | undefined): Promise<any> {
 		const headers = new HttpHeaders({
 			'Content-Type': 'application/json',
 			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
@@ -52,6 +52,56 @@ export class LpsService {
 		return new Promise((resolve, reject) => {
 			const url = getAPIEndpoint() + 'v1/lps/' + id;
 			this.http.delete<any>(url, options).subscribe({
+				next: (data) => {
+					resolve(data);
+				},
+				error: (error) => {
+					reject(error);
+				}
+			});
+		});
+	}
+
+	/**
+	 * Update model
+	 */
+	public update(id: number, data: any): Promise<any> {
+		const headers = new HttpHeaders({
+			'Content-Type': 'application/json',
+			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+		});
+		const options = {
+			headers
+		};
+
+		return new Promise((resolve, reject) => {
+			const url = getAPIEndpoint() + 'v1/lps/' + id;
+			this.http.put<any>(url, data, options).subscribe({
+				next: (data) => {
+					resolve(data);
+				},
+				error: (error) => {
+					reject(error);
+				}
+			});
+		});
+	}
+
+	/**
+	 * Create model
+	 */
+	public create(data: any): Promise<any> {
+		const headers = new HttpHeaders({
+			'Content-Type': 'application/json',
+			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+		});
+		const options = {
+			headers
+		};
+
+		return new Promise((resolve, reject) => {
+			const url = getAPIEndpoint() + 'v1/lps';
+			this.http.post<any>(url, data, options).subscribe({
 				next: (data) => {
 					resolve(data);
 				},

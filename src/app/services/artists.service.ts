@@ -14,7 +14,7 @@ export class ArtistsService {
 	/**
 	* List model
 	*/
-	public list(params: { order_by: string; direction :string; page: number; per_page: string; relationships: string; artistName?: string } | undefined): Promise<any> {
+	public list(params: { order_by: string; direction: string; page: number; per_page: string; relationships: string; name?: string } | undefined): Promise<any> {
 		const headers = new HttpHeaders({
 			'Content-Type': 'application/json',
 			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
@@ -36,6 +36,32 @@ export class ArtistsService {
 			});
 		});
 	}
+
+	/**
+	 * Get model by id
+	 */
+	public get(id: number): any {
+		const headers = new HttpHeaders({
+			'Content-Type': 'application/json',
+			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+		});
+		const options = {
+			headers
+		};
+
+		return new Promise((resolve, reject) => {
+			const url = getAPIEndpoint() + 'v1/artists/' + id;
+			this.http.get<any>(url, options).subscribe({
+				next: (data) => {
+					resolve(data);
+				},
+				error: (error) => {
+					reject(error);
+				}
+			});
+		});
+	}
+
 
 	/**
 	 * Detele model
