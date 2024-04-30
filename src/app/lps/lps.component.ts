@@ -156,7 +156,7 @@ export class LpsComponent implements OnInit, AfterViewInit {
 		try {
 			const modal = await this.modalCtrl.create({
 				component: NewEditComponent,
-				cssClass: 'new-edit-modal',
+				cssClass: 'new-edit-lp-modal',
 				componentProps: {
 					lp: lp,
 					title: 'Edit Lp: ' + lp.title,
@@ -182,7 +182,7 @@ export class LpsComponent implements OnInit, AfterViewInit {
 		try {
 			const modal = await this.modalCtrl.create({
 				component: NewEditComponent,
-				cssClass: 'new-edit-modal',
+				cssClass: 'new-edit-lp-modal',
 				componentProps: {
 					title: 'New Lp',
 					confirmButtonText: 'Create',

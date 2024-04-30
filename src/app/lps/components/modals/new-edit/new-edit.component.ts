@@ -1,8 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
-import { debounceTime, switchMap, startWith, filter } from 'rxjs/operators';
+import { debounceTime, switchMap, startWith, filter, catchError } from 'rxjs/operators';
+import { Observable, of, from } from 'rxjs';
 import { ArtistsService } from '../../../../services/artists.service'; // Update the import path as needed
+import { LpsService } from 'src/app/services/lps.service';
 
 @Component({
 	selector: 'app-new-edit-lp',
@@ -17,52 +19,62 @@ export class NewEditComponent implements OnInit {
 
 	lpForm: FormGroup;
 	artistControl = new FormControl();
-	artists: any[] = [];
+	filteredArtists: Observable<any[]> | undefined;
 
 	constructor(
 		private modalCtrl: ModalController,
 		private fb: FormBuilder,
-		private artistService: ArtistsService // Make sure to inject ArtistService
+		private artistService: ArtistsService,
+		private lpService: LpsService
 	) {
 		this.lpForm = this.fb.group({
 			title: ['', [Validators.required, Validators.maxLength(50)]],
 			description: ['', [Validators.required, Validators.maxLength(256)]],
+			artist_id: []
 		});
 	}
 
-	ngOnInit() {
+	async ngOnInit() {
 		if (this.lp) {
 			this.lpForm.patchValue({
 				title: this.lp.title,
 				description: this.lp.description,
 			});
+
 			if (this.lp.artist_id) {
-				this.artistService.get(this.lp.artist_id).then((artist: any) => {
-					this.artistControl.setValue(artist); // You might need to adjust this depending on what you want to display
-				}).catch((error: any) => console.error('Failed to fetch artist:', error));
+				try {
+					const artist = await this.artistService.get(this.lp.artist_id);
+					this.artistControl.setValue(artist.data);
+				} catch (error) {
+				}
 			}
 		}
 
-		this.artistControl.valueChanges.pipe(
+		this.filteredArtists = this.artistControl.valueChanges.pipe(
 			startWith(''),
 			debounceTime(300),
-			filter(value => value.length > 0), // Ensure value has at least one character
-			switchMap(value => this.artistService.list({
-				name: value,
-				page: 1,
-				per_page: '5',
-				order_by: 'name',
-				direction: 'asc',
-				relationships: 'none'
-			}))
-		).subscribe({
-			next: (data) => {
-				this.artists = data.items; // Adjust according to your actual API response
-			},
-			error: (error) => {
-				console.error('Failed to fetch data:', error);
-			}
-		});
+			filter(value => typeof value === 'string' && value.length > 0),
+			switchMap(value => this.searchArtists(value)),
+			catchError(err => {
+				console.error('Error in autocomplete search:', err);
+				return of([]);
+			})
+		);
+	}
+
+	searchArtists(value: string): Observable<any[]> {
+		return from(this.artistService.list({
+			name: value,
+			page: 1,
+			per_page: '5',
+			order_by: 'name',
+			direction: 'asc',
+			relationships: ''
+		}).then(response => response.data));  // Adjust here to access the data field
+	}
+
+	displayFn(artist: any): string {
+		return artist ? artist.name : '';
 	}
 
 	close(data: any = null) {
@@ -72,20 +84,21 @@ export class NewEditComponent implements OnInit {
 	saveLp() {
 		if (this.lpForm.valid) {
 			const formModel = this.lpForm.value;
+			// Extract artist ID from the artist object stored in artistControl
+			formModel.artist_id = this.artistControl.value ? this.artistControl.value.id : null;
+
 			if (this.lp) {
-				this.artistService.update(this.lp.id, formModel).then(res => {
-					console.log('Lp updated:', res);
+				this.lpService.update(this.lp.id, formModel).then(res => {
 					this.close(res);
 				}).catch(err => {
-					console.error('Error updating lp:', err);
+					console.error('Error updating LP:', err);
 					this.close();
 				});
 			} else {
-				this.artistService.create(formModel).then(res => {
-					console.log('Lp created:', res);
+				this.lpService.create(formModel).then(res => {
 					this.close(res);
 				}).catch(err => {
-					console.error('Error creating lp:', err);
+					console.error('Error creating LP:', err);
 					this.close();
 				});
 			}

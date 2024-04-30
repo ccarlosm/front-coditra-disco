@@ -8,20 +8,23 @@
 	<form [formGroup]="lpForm" (ngSubmit)="saveLp()" style="margin-bottom: 20px;">
 		<ion-item>
 			<ion-label position="floating">LP title</ion-label>
-			<ion-input aria-label="lp-title" formControlName="title" type="text" [counter]="true" maxlength="50"></ion-input>
+			<ion-input aria-label="title" formControlName="title" type="text"></ion-input>
 		</ion-item>
 		<ion-item>
 			<ion-label position="floating">Description</ion-label>
-			<ion-textarea aria-label="lp-description" formControlName="description" [counter]="true" maxlength="256" autoGrow="true"></ion-textarea>
+			<ion-textarea aria-label="description" formControlName="description" autoGrow="true"></ion-textarea>
 		</ion-item>
-		<mat-form-field>
-			<mat-label>Artists</mat-label>
-			<mat-select formControlName="artistControl">
-				<mat-option *ngFor="let artist of artists" [value]="artist.id">{{ artist.name }}</mat-option>
-			</mat-select>
+		<!-- Artist Selector with Search -->
+		<mat-form-field appearance="fill" style="width: 80%;margin-left:10px;margin-top: 20px;">
+			<mat-label>Select an Artist</mat-label>
+			<input matInput placeholder="Type to search artists" [formControl]="artistControl" [matAutocomplete]="auto">
+			<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+				<mat-option *ngFor="let artist of filteredArtists | async" [value]="artist">
+					{{ artist.name }}
+				</mat-option>
+			</mat-autocomplete>
 		</mat-form-field>
-		<div style="margin-bottom: 2rem;"></div>
-		<ion-row class="button-row">
+		<ion-row>
 			<ion-button expand="block" type="submit" [disabled]="!lpForm.valid">{{ confirmButtonText }}</ion-button>
 			<ion-button expand="block" color="medium" (click)="close()">{{ cancelButtonText }}</ion-button>
 		</ion-row>
